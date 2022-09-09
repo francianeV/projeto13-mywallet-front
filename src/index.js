@@ -1,11 +1,6 @@
 import ReactDOM from "react-dom";
+import "./assets/styles/reset.css";
+import App from "./componentes/App"
 
-function App() {
-  return (
-    <div>
-      <h1>Teste"</h1>
-    </div>
-  );
-}
 
 ReactDOM.render(<App />, document.querySelector(".root"));

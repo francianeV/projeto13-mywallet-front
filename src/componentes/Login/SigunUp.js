@@ -7,8 +7,8 @@ import BeatLoader from "react-spinners/BeatLoader";
 
 export default function SignUp(){
     const navigate = useNavigate();
-    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [conf_password, setConf_password] = useState('');
     const [disabled, setDisable] = useState(false);
@@ -40,7 +40,7 @@ export default function SignUp(){
             .catch(err => {
                 setLoading(false);
                 setDisable(false);
-                alert("Erro ao realizar o cadastro. Tente novamente!");
+                alert(err.response.data);
             })
         }
     }
@@ -120,6 +120,10 @@ const Form = styled.form`
             font-weight: 700;
             font-size: 20px;
             color: #FFFFFF;
+        }
+
+        :hover{
+            cursor: pointer;
         }
     }
 `;

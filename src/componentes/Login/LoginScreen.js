@@ -3,19 +3,61 @@ import styled from "styled-components";
 import { useContext, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import BeatLoader from "react-spinners/BeatLoader";
+import MyContext from "../Context/MyContext";
 
 export default function LoginScreen(){
+    const navigate = useNavigate();
+    const {setToken, setName}= useContext(MyContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [disabled, setDisable] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    function sendInfos(event){
+        event.preventDefault();
+        const body = {
+            email, 
+            password
+        }
+
+        setLoading(true);
+        setDisable(true);
+
+        const promise = axios.post('http://localhost:5000/sign-in',body);
+
+        promise.then(res => {
+            navigate("/registros", {replace:true});
+            setToken(res.data.token)
+            setName(res.data.name)
+        
+        }).catch(err => {
+            if(err.request.status === 409){
+                setLoading(false);
+                setDisable(false);
+                return alert(err.response.data)
+            }
+
+            else if(err.request.status === 401){
+                setLoading(false);
+                setDisable(false);
+                return alert('Email ou senha inválidos');
+            }else{
+                setLoading(false);
+                setDisable(false);
+                alert(err.request.status);
+            }
+        })
+    }
+
 
     return(
         <Container>
             <LoginTop />
-            <Form>
-                <input type="email" value={email} placeholder="Email" required onChange={e => setEmail(e.target.value)}></input>
-                <input type="password" value={password} placeholder="Senha" required onChange={e => setPassword(e.target.value)}></input>
-                <button disabled={disabled}><span>Entrar</span></button>
+            <Form onSubmit={sendInfos}>
+                <input type="email" value={email} placeholder="Email" required onChange={e => setEmail(e.target.value)} disabled={disabled}></input>
+                <input type="password" value={password} placeholder="Senha" required onChange={e => setPassword(e.target.value)} disabled={disabled}></input>
+                <button disabled={disabled}>{loading ? <BeatLoader color="white" size={15} /> : <span>Entrar</span>}</button>
             </Form>
             <Link to={"/cadastro"}>
                 <Register>Não tem conta? Cadastre-se!</Register>
@@ -80,6 +122,10 @@ const Form = styled.form`
             font-size: 20px;
             line-height: 23px;
             color: #FFFFFF;
+        }
+
+        :hover{
+            cursor: pointer;
         }
     }
 `;

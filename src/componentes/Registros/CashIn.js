@@ -1,17 +1,68 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import BeatLoader from "react-spinners/BeatLoader";
+import MyContext from "../Context/MyContext";
+import axios from "axios";
 
 
 export default function CashIn(){
+    const navigate = useNavigate();
+    const {user} = useContext(MyContext);
     const [value, setValue] = useState();
     const [description, setDescription] = useState('');
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${user.token}`
+        }
+    };
+
+    function addExpenseIn(event){
+        event.preventDefault();
+
+        const body = {
+            value: parseFloat(value),
+            description
+        }
+
+        setDisabled(true);
+        setLoading(true);
+
+        const promise = axios.post("http://localhost:5000/cash-in", body, config);
+
+        promise.then(() => {
+            alert('Registro feito com sucesso')
+            navigate("/registros", {replace: true});
+
+        })
+
+        .catch(err => {
+            if(err.request.status === 401){
+                setDisabled(false);
+                setLoading(false);
+                return alert('Não autorizado!')
+
+            }
+
+            if(err.request.status === 422){
+                setDisabled(false);
+                setLoading(false);
+                return alert(err.response.data)
+            }
+            setDisabled(false);
+            setLoading(false);
+            console.log(err.response.data)
+        });
+
+    }
+
     return (
         <Container>
             <Title>Nova entrada</Title>
-            <Form>
+            <Form onSubmit={addExpenseIn}>
                 <input type="number" placeholder="Valor" required onChange={e => setValue(e.target.value)} disabled={disabled}></input>
                 <input type="description" placeholder="Descrição" required onChange={e => setDescription(e.target.value)} disabled={disabled}></input>
                 <button disabled={disabled}>{loading ? <BeatLoader color="white" size={15} /> : <span>Salvar Entrada</span>}</button>

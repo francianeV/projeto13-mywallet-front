@@ -8,7 +8,7 @@ import MyContext from "../Context/MyContext";
 
 export default function LoginScreen(){
     const navigate = useNavigate();
-    const {setToken, setName}= useContext(MyContext);
+    const {setUser }= useContext(MyContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [disabled, setDisable] = useState(false);
@@ -28,9 +28,8 @@ export default function LoginScreen(){
 
         promise.then(res => {
             navigate("/registros", {replace:true});
-            setToken(res.data.token)
-            setName(res.data.name)
-        
+            setUser(res.data)
+
         }).catch(err => {
             if(err.request.status === 409){
                 setLoading(false);
@@ -103,6 +102,9 @@ const Form = styled.form`
     }
 
     button{
+        display: flex;
+        justify-content: center;
+        align-items: center; 
         border: none;
         margin-top: 15px;
         margin-bottom: 36px;

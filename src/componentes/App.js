@@ -9,11 +9,10 @@ import CashIn from "./Registros/CashIn";
 import CashOut from "./Registros/CashOut";
 
 export default function App() {
-  const [token, setToken] = useState('');
-  const [name, setName] = useState('');
+  const [user, setUser] = useState({});
 
   return (
-    <MyContext.Provider value={{token, setToken, name, setName}}>
+    <MyContext.Provider value={{user, setUser}}>
     <GlobalStyle />
     <BrowserRouter>
         <Routes>
